@@ -31,14 +31,18 @@ class App:
         # Configuração do menu
         self.create_menu_buttons()
 
+        # Frame para a página inicial
+        self.home_frame = tk.Frame(root, bg="#ecf0f1")
+        self.create_home_page()
+
         # Frame para a página de estoque
         self.stock_frame = tk.Frame(root, bg="#ecf0f1")
         self.stock_frame.pack(fill=tk.BOTH, expand=True)
-
+        
         self.create_stock_page()
 
         # Inicializa com a página de estoque
-        self.show_frame(self.stock_frame)
+        self.show_frame(self.home_frame)
 
     def create_menu_buttons(self):
         # Adicionando um texto que se assemelha a um h2
@@ -47,14 +51,33 @@ class App:
         header_label.place(x=260, y=20)
 
         # Adicionando botões
-        button = tk.Button(self.frame_menu, text="Inicio", width=10)
+        button = tk.Button(self.frame_menu, text="Inicio", width=10, command=lambda: self.show_frame(self.home_frame))
         button.place(x=1000, y=25)
 
-        button2 = tk.Button(self.frame_menu, text="Estoque", width=10)
+        button2 = tk.Button(self.frame_menu, text="Estoque", width=10, command=lambda: self.show_frame(self.stock_frame))
         button2.place(x=1100, y=25)
 
         button3 = tk.Button(self.frame_menu, text="Sobre", width=10)
         button3.place(x=1200, y=25)
+
+    def create_home_page(self):
+        try:
+            # Carregar e exibir a imagem
+            canvas2 = tk.Canvas(self.home_frame, width=400, height=300)
+            home_img = tk.PhotoImage(file=r"svc/img/logo.png")
+            label_imagem = tk.Label(self.home_frame, image=home_img)
+            canvas2.image = home_img  # Mantém a referência da imagem
+            label_imagem.pack(fill=tk.BOTH, expand=True)
+        except Exception as e:
+            print(f"Erro ao carregar a imagem: {e}")
+
+        # Texto da página inicial
+        label = tk.Label(self.home_frame, text="Página de Produtos", font=("Arial", 16, "bold"), fg="red")
+        label.place(relx=0.5, rely=0.2, anchor='center')
+
+        # Botão para ir ao estoque
+        back_button = tk.Button(self.home_frame, text="Ir para o Estoque", command=lambda: self.show_frame(self.stock_frame))
+        back_button.place(relx=0.5, rely=0.8, anchor='center')
 
     def show_stock_page(self):
         self.show_frame(self.stock_frame)
@@ -182,6 +205,9 @@ class App:
             Estoque.addProduto(produto)
 
     def show_frame(self, frame):
+        # Esconde todos os frames e mostra o frame desejado
+        self.home_frame.pack_forget()
+        self.stock_frame.pack_forget()
         frame.pack(fill=tk.BOTH, expand=True)
 
     def excluir_produto(self, produto_id):
@@ -230,6 +256,7 @@ class App:
                 self.atualizar_produtos()
 
                 messagebox.showinfo("Sucesso", "Produto atualizado com sucesso!")
+                label_edit.destroy()
 
             except Exception:
                 messagebox.showerror("Erro", "Erro ao atualizar o item!")
